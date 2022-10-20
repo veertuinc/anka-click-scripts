@@ -8,7 +8,7 @@ for PNG in $(ls *.png); do
     MUAV_NAME="\$$(echo ${PNG} | cut -d. -f1)_image"
     MUAV_VAL="$(base64 $PNG)"
     grep "${MUAV_NAME} " "${SCRIPT_NAME}" && sed -i '' "/${MUAV_NAME}/d" "${SCRIPT_NAME}"
-    echo -e "${MUAV_NAME} ${MUAV_VAL}\n$(cat ${SCRIPT_NAME})" > "${SCRIPT_NAME}"
+    echo -e "${MUAV_NAME} ${MUAV_VAL}\n$(cat ${SCRIPT_NAME} | sed 's/\\n/\\\\n/g' | sed 's/\\t/\\\\t/g')" > "${SCRIPT_NAME}"
 done
 
 # remove _alt from end of vars until boris adds || for ()
