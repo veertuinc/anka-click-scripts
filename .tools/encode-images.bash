@@ -13,3 +13,6 @@ done
 
 # remove _alt from end of vars until boris adds || for ()
 sed -i '' 's/_alt_image/_image/g' "${SCRIPT_NAME}"
+
+# cleanup
+rm -f *.png

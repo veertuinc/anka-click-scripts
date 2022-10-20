@@ -7,6 +7,7 @@ cd "${SCRIPT_DIR}"
 IFS=$'\n'
 for MUAV in $(grep ^\\$ "${SCRIPT_NAME}"); do
     MUAV_NAME="$(echo ${MUAV} | awk '{print $1}' | sed 's/\$//g')"
+    MUAV_NAME="${MUAV_NAME//_image/}"
     [[ -f "${MUAV_NAME}.png" ]] && MUAV_NAME="${MUAV_NAME}_alt"
     MUAV_VAL="$(echo ${MUAV} | awk '{print $2}')"
     echo -n "${MUAV_VAL}" | base64 --decode > "${MUAV_NAME}.png"
