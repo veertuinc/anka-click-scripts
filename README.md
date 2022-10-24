@@ -1,20 +1,14 @@
 # Anka Click/MUAS Scripts
 
-This repo is a collection of Behavior-Driven MacOS UI Automation Framework scripts and tools for Anka's "click" feature. With MUAF scripts, you can programmatically target, click, and even send keystrokes to the VM's macOS UI and apps. Often, macOS and applications do not have a CLI allowing you to perform certain actions. Some examples of what you can automate:
+This repo is a collection of Behavior-Driven MacOS UI Automation Framework scripts and tools for Anka's "click" feature. Often, macOS and applications do not have a CLI allowing you to perform certain actions such as toggling configuration options. This varies from app to app and can severely impact the maintainabiliy and automatability for your team. With MUAF scripts, you can programmatically target, click, and even send keystrokes to your Anka VM's macOS UI.
+
+Some examples of what you can automate:
 
 - Disabling SIP from Apple Silicon VMs (which requires Recovery Mode).
 - Enabling VNC/Remote Management under System Preferences.
 - Enabling certain settings only available in the Simulator Menu (Prefer Discrete GPU) to optimize simulator tests.
 
-
-
-
-TODO:
-
-- Support || for separating alternative images in () instead of having them have the same name
-
-
-# Scripting Basics
+# Syntax Basics
 
 ## Variables
 
@@ -23,26 +17,116 @@ Assign a `string`, `integer`, or `png image (as base64)` to a variable at the to
 ```
 $macos_maj_ver 12
 $prefix "muas-"
-$next_image iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAUGVYSWZNTQAqAAAACAACARIAAwAAAAEAAQAAh2kABAAAAAEAAAAmAAAAAAADoAEAAwAAAAEAAQAAoAIABAAAAAEAAAAgoAMABAAAAAEAAAAgAAAAAL5bTO0AAAIFaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA2LjAuMCI+CiAgIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgICAgIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj4xMDI0PC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6UGl4ZWxZRGltZW5zaW9uPjc2ODwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgp/iD9uAAAByElEQVRYCe2WyYrCQBRFb+zGAQcEBQdcqIhbwYX/oAtRv6j/SAV/wJ2foTgPCIIiDtDdt8BGYxljUiANqU1SyXvvntx6VUQrFovfeONwvVFbSDsAjgP/3wGXy4VyuYxSqWRpQ31ayrpK8nq9yOfz0DQNPp8P3W736u3z249EIvH1POxxxOl0wna7RTabxW8teDweDAaDxwm6N7YBWG+5XGK32yGTyQgIutLv93VS8qkSAJZeLBbY7/dIp9MvQSgDIMR8Psdms/lbDvbEMyeUAhBitVphNpshl8shmUyKxjSCUA5ACLowHA4FRCqVMoSQbsNqtSroWczK4M44HA44Ho9gQxYKBdEfvV7vrpwUIBqNisS7aJMPKBoMBm+iQ6HQzfwy0WQ/JG63G4FA4BLz8pUO8ISsVCqIxWKYTCZotVrCEX0xqQO0br1e62NNz/m19Xod4XDYUJwFpQCmlSSBkUgEjUYDfr9fiDebTdCRR0MpAI/iWq0mjuPxeCxsNxInlDKAeDwubGf/jEYjtNttwy+/OKLkf4CNRttfFSeEbQCKWhUngJIl4K6ZTqfodDo4n8+sa3pIzwHT2QoCbS+BXQYHwHHg7Q78AOAlpzTuTXd0AAAAAElFTkSuQmCC
+$next_image iVBORw0KGgoAAAANSUhEUgAA. . .
 ```
+
+**PRO TIP:** If there are multiple image/png variables with the same name, the framework will try each image until it gets a match.
+
 
 ### Clicking and Targeting
 
-`(location/target)[mouse button]`
+#### `(Location/Target)[Mouse Button]`
 
-Available buttons:
+There are many times that macOS or your applications will require user confirmation for popup dialogs. Defining where and how to click is fairly simple:
+
+##### Location/Target
+
+- **Center of Image:** `(image_variable_name)` allows you to target the center of an image on screen using the variable name defined in your script.
+- **Coordinate:**`(X,Y)` is the pixels starting from the top left corner of the screen (which is `(0,0)`).
+    - `+` and `-` are available to control the direction from the previous mouse location: `(+350` is right 350 pixels, and `-10)` will be up 10 pixels.
+    - You can also target and click relative to previous mouse location: `(vnc_image)0 (+350,+0)`
+
+##### Mouse Button
 
 - `0`: do nothing, just use the location specified as a starting target for subsequent directives
 - `1`: (default) left click with tiny interval between down and up
 
-() - click (pointer event), could be absolute: (123, 456), pattern based (images) - will wait and position on its center, or relative according to previous click - (+1, -0)
-You can disable clicking of items and just use it as the starting point for subsequent directives: `(vnc)0` `(location)[button]`
+##### Example
 
-+ - wait rule, could wait for image or, +2s, +5000n, 300 (msec by default)
+This code snippet will target the center of vnc_image, avoid clicking with 0, and then from there move +350,+0 and click.
 
-"keystroke" rule, supports \n - return button, \t - tab button
+```
+(vnc_image)0
+(+350,+0)
+if modify_settings_image, on_image
+    "admin\n"
+else
+    +500
+end
+```
 
-:key code - the explicitly specified key codes pressed simultaneously, e.g. :cmd q - quit from a foreground app
+### Waiting
+
+#### `+<duration/image variable>`
+
+It is very common for applications to take time to load. Often you'll want to execute actions and have delays in between them so you can guarantee subsequent actions are not performed prematurely. This can be done with either a duration or image variable:
+
+- **Duration:** The interval as an integer that the script will wait before proceeding: `+2s, +5000n, 300 (msec by default)`
+- **Wait for Image:** The image we want to ensure is visible before proceeding: `+bash_image`
+
+##### Example
+
+This code snippet will, inside of Recovery Mode, click Utilities in the menu bar, then the Terminal button, and once terminal is opened type "csrutil disable" and hit return.
+
+```
+(utilities_image) (terminal_image)
++bash_image
+"csrutil disable\n"
++1s
+"y\n"
++1s
+"admin\n"
++1s
+"shutdown -h now\n"
+```
+
+### Keystrokes
+
+#### `"keystrokes here\n"
+
+Simulating user input is also possible. This is useful for typing logins or setting configuration values within user prompts. It will not automatically execute return, so be sure to use `\n` on the end for that. You can also tab with `\t`.
+
+##### Example
+
+```
+(utilities_image) (terminal_image)
++bash_image
+"csrutil disable\n"
++1s
+"y\n"
++1s
+"admin\n"
++1s
+"shutdown -h now\n"
+```
+
+### Keyboard Shortcuts
+
+#### `:<key> <key> . . .`
+
+Closing or quitting applications can be done through clicking, however, keyboard shortcuts are often much easier to use. You can define 8 keys to be pressed simultaneously inside of the script. 
+
+Note: Some codes aren't what you expect. The command key is `cmd` and escape `esc`. You can find macOS QUERTY keyboard codes through a simple google search.
+
+##### Examples
+
+The snippet below will enable VNC inside of System Preferences and then quit with it `:cmd q`
+```
+. . .
+if off_image, on_image
+    (vnc_image)0
+    (+350,+0)
+    if modify_settings_image, on_image
+        "admin\n"
+    else
+        +500
+    end
+end
+
+:cmd q
+```
+
+---
 
 The ptr events could be organized into "behavioural sequences": (img1) (img2) (img3)... (imgN), this is complex logic, it includes waits, retries, skips of already passed phases etc
 New
@@ -126,3 +210,52 @@ Fri Oct 21 15:13:05 click: waiting for 1 sec 0 nsec
 ❯ anka run test csrutil status
 System Integrity Protection status: disabled.
 ```
+
+## Script Development
+
+There are several tools you can use to make development of scripts easier:
+
+1. `unencode-images.bash` - Allows you take the base64 png variables in the MUAS and export them to png files.
+
+    ```bash
+    ❯ ls 13.0/enable-vnc/                
+    enable-vnc.muas
+
+    ❯ .tools/unencode-images.bash 13.0/enable-vnc/enable-vnc.muas
+    . . .
+
+    ❯ ls 13.0/enable-vnc/ 
+    background.png      general_title.png   on.png              vnc_alt.png
+    close.png           login_items.png     settings.png
+    enable-vnc.muas     modify_settings.png sharing.png
+    general.png         off.png             vnc.png
+    ```
+
+2. `encode-images.bash` - Allows you to take all images in the same directory as the MUAS and encode them as variables.
+
+    ```bash
+    ❯ ls 13.0/enable-vnc/ 
+    background.png      general_title.png   on.png              vnc_alt.png
+    close.png           login_items.png     settings.png
+    enable-vnc.muas     modify_settings.png sharing.png
+    general.png         off.png             vnc.png
+
+    ❯ ls 13.0/enable-vnc/                                        
+    enable-vnc.muas
+
+    ❯ head -3 13.0/enable-vnc/enable-vnc.muas  
+    $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
+    $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
+    $sharing_image iVBORw0KGgoAAAANSUhEUgAAA. . .
+    . . .
+    ```
+
+
+
+
+
+
+TODO:
+
+- Support || for separating alternative images in () instead of having them have the same name
+- Guide for icloud login
