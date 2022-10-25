@@ -1,4 +1,4 @@
-# Anka Click/MUAS Scripts
+# Anka Behavior-Driven MacOS UI Automation Framework scripts
 
 This repo is a collection of Behavior-Driven MacOS UI Automation Framework scripts and tools for Anka's "click" feature. Often, macOS and applications do not have a CLI allowing you to perform certain actions such as toggling configuration options. This varies from app to app and can severely impact the maintainabiliy and automatability for your team. With MUAF scripts, you can programmatically target, click, send keystrokes, and much more to your Anka VM's macOS UI.
 
