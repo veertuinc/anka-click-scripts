@@ -24,7 +24,6 @@ $next_image iVBORw0KGgoAAAANSUhEUgAA. . .
 
 **PRO TIP:** If there are multiple image/png variables with the same name, the framework will try each image until it gets a match.
 
-
 ## Clicking and Targeting
 
 ### `(<location/target>)[mouse button]`
@@ -45,11 +44,12 @@ There are many times that macOS or your applications will require user confirmat
 
 #### Example
 
+**PRO TIP:** Clicks currently are the only directives which be placed inline.
+
 This code snippet will target the center of vnc_image, avoid clicking with 0, and then from there move +350,+0 and click.
 
 ```
-(vnc_image)0
-(+350,+0)
+(vnc_image)0 (+350,+0)
 if modify_settings_image, on_image
     "admin\n"
 else
@@ -273,9 +273,11 @@ While most scripts will be for Anka VM Template preparation, you can of course u
 
 2. Execute `enable-kernel-extensins.muas`
 
-```bash
-❯ anka --debug view --click 13.0/enable-kernel-extensions/enable-kernel-extensions.muas 13.0
-```
+    ```bash
+    ❯ anka --debug view --click 13.0/enable-kernel-extensions/enable-kernel-extensions.muas 13.0
+    ```
+
+---
 
 ## Script Development
 
