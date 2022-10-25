@@ -217,7 +217,9 @@ Fri Oct 21 15:13:05 click: waiting for 1 sec 0 nsec
 System Integrity Protection status: disabled.
 ```
 
-### Prefer Discrete GPU in Simulator
+<!-- ### Prefer Discrete GPU in Simulator
+
+While most scripts will be for Anka VM Template preparation, you can of course use it in your Controller-less setup where you have access to the Anka CLI on the host. This example shows how to achieve this.
 
 1. Start a Ventura VM
 2. Ensure Xcode is installed
@@ -259,7 +261,21 @@ System Integrity Protection status: disabled.
     ❯ anka --debug view --click 13.0/simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas 13.0
     # Run test in simulator
     ❯ anka run 13.0 bash -lc "./swift-voxel.bash test"
+    ``` -->
+
+### Enable Kernel Extensions
+
+1. Boot into Recovery Mode
+
+    ```bash
+    ❯ ANKA_START_MODE=2 anka start -v 13.0
     ```
+
+2. Execute `enable-kernel-extensins.muas`
+
+```bash
+❯ anka --debug view --click 13.0/enable-kernel-extensions/enable-kernel-extensions.muas 13.0
+```
 
 ## Script Development
 
