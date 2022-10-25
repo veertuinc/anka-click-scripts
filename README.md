@@ -82,6 +82,17 @@ This code snippet will, inside of Recovery Mode, click Utilities in the menu bar
 "shutdown -h now\n"
 ```
 
+#### Last Retry
+
+In the last example, you'll see the following:
+
+```
+(utilities_image) (terminal_image)
++bash_image
+```
+
+Part of the wait logic for `bash_image` is to retry the `terminal_image` should waiting timeout. This is useful should the first click (on `terminal_image`) not send properly for some reason.
+
 ## Keystrokes
 
 ### `"keystrokes here\n"`
@@ -130,8 +141,6 @@ end
 
 ---
 
-The ptr events could be organized into "behavioural sequences": (img1) (img2) (img3)... (imgN), this is complex logic, it includes waits, retries, skips of already passed phases etc
-New
 
 This behavioural logic extends also on next wait rule also:
 (img1) (img2)... (imgN)
