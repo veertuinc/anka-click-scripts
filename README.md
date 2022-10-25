@@ -12,6 +12,8 @@ Some examples of what you can automate:
 
 ## Variables
 
+### `$<variable name>`
+
 Assign a `string`, `integer`, or `png image (as base64)` to a variable at the top of your muas script with `$<label>`. These are then made available throught the script logic.
 
 ```
@@ -23,25 +25,25 @@ $next_image iVBORw0KGgoAAAANSUhEUgAA. . .
 **PRO TIP:** If there are multiple image/png variables with the same name, the framework will try each image until it gets a match.
 
 
-### Clicking and Targeting
+## Clicking and Targeting
 
-#### `(Location/Target)[Mouse Button]`
+### `(<location/target>)[mouse button]`
 
 There are many times that macOS or your applications will require user confirmation for popup dialogs. Defining where and how to click is fairly simple:
 
-##### Location/Target
+#### Location/Target
 
 - **Center of Image:** `(image_variable_name)` allows you to target the center of an image on screen using the variable name defined in your script.
 - **Coordinate:**`(X,Y)` is the pixels starting from the top left corner of the screen (which is `(0,0)`).
     - `+` and `-` are available to control the direction from the previous mouse location: `(+350` is right 350 pixels, and `-10)` will be up 10 pixels.
     - You can also target and click relative to previous mouse location: `(vnc_image)0 (+350,+0)`
 
-##### Mouse Button
+#### Mouse Button
 
 - `0`: do nothing, just use the location specified as a starting target for subsequent directives
 - `1`: (default) left click with tiny interval between down and up
 
-##### Example
+#### Example
 
 This code snippet will target the center of vnc_image, avoid clicking with 0, and then from there move +350,+0 and click.
 
@@ -55,16 +57,16 @@ else
 end
 ```
 
-### Waiting
+## Waiting
 
-#### `+<duration/image variable>`
+### `+<duration/image variable>`
 
 It is very common for applications to take time to load. Often you'll want to execute actions and have delays in between them so you can guarantee subsequent actions are not performed prematurely. This can be done with either a duration or image variable:
 
 - **Duration:** The interval as an integer that the script will wait before proceeding: `+2s, +5000n, 300 (msec by default)`
 - **Wait for Image:** The image we want to ensure is visible before proceeding: `+bash_image`
 
-##### Example
+#### Example
 
 This code snippet will, inside of Recovery Mode, click Utilities in the menu bar, then the Terminal button, and once terminal is opened type "csrutil disable" and hit return.
 
@@ -80,13 +82,13 @@ This code snippet will, inside of Recovery Mode, click Utilities in the menu bar
 "shutdown -h now\n"
 ```
 
-### Keystrokes
+## Keystrokes
 
-#### `"keystrokes here\n"
+### `"keystrokes here\n"`
 
 Simulating user input is also possible. This is useful for typing logins or setting configuration values within user prompts. It will not automatically execute return, so be sure to use `\n` on the end for that. You can also tab with `\t`.
 
-##### Example
+#### Example
 
 ```
 (utilities_image) (terminal_image)
@@ -100,17 +102,17 @@ Simulating user input is also possible. This is useful for typing logins or sett
 "shutdown -h now\n"
 ```
 
-### Keyboard Shortcuts
+## Keyboard Shortcuts
 
-#### `:<key> <key> . . .`
+### `:<key> <key> . . .`
 
 Closing or quitting applications can be done through clicking, however, keyboard shortcuts are often much easier to use. You can define 8 keys to be pressed simultaneously inside of the script. 
 
 Note: Some codes aren't what you expect. The command key is `cmd` and escape `esc`. You can find macOS QUERTY keyboard codes through a simple google search.
 
-##### Examples
+#### Examples
 
-The snippet below will enable VNC inside of System Preferences and then quit with it `:cmd q`
+The incomplete snippet below will enable VNC inside of System Preferences and then quit with it `:cmd q`
 ```
 . . .
 if off_image, on_image
@@ -160,6 +162,10 @@ if $var > 99 exit
 
 The "power" is behavioural sequences...
 
+This line could be read as if wait for off_image till on_image succeeded do something
+succeeded means the off_image appeared, not on_image, on_image is just allow to abort waiting
+
+So it is's already on do nothing in this particular case
 
 
 ## Examples
