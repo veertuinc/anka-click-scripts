@@ -223,47 +223,49 @@ System Integrity Protection status: disabled.
 2. Ensure Xcode is installed
 3. Copy in the `swift-voxel.bash` script
 
-```bash
-#!/usr/bin/env bash
-set -exo pipefail
-cd "${HOME}"
-if [[ "${*}" =~ "prep" ]]; then
-  [[ ! -d SwiftVoxel ]] && git clone https://github.com/claygarrett/SwiftVoxel.git
-fi
-if [[ "${*}" =~ "build-launch-simulator-and-install" ]]; then
-  cd SwiftVoxel
-  xcrun simctl list --json devices available; sleep 20 # fix a weird bug where xcrun simctl list --json devices available is empty the first run
-  SIM_VER="$(xcrun simctl list --json devices available | grep name | grep Pro | head -1 | cut -d'"' -f4)"
-  xcodebuild -workspace SwiftVoxel.xcworkspace -derivedDataPath /tmp/ -scheme SwiftVoxel -destination "platform=iOS Simulator,name=${SIM_VER}" build
-  SIMID=$(xcrun simctl create test "com.apple.CoreSimulator.SimDeviceType.$(echo ${SIM_VER} | sed 's/ /-/g')")
-  xcrun simctl boot "${SIMID}"
-  sleep 120
-  open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
-  xcrun simctl install test /tmp/Build/Products/Debug-iphonesimulator/SwiftVoxel.app
-fi
-if [[ "${*}" =~ "test" ]]; then
-  BUNDLE_ID="$(defaults read /tmp/Build/Products/Debug-iphonesimulator/SwiftVoxel.app/Info.plist CFBundleIdentifier)"
-  xcrun simctl launch test "${BUNDLE_ID}"
-  sleep 300 # Sleep 5 minutes to make sure the VM doesn't crash
-fi
-```
+    ```bash
+    #!/usr/bin/env bash
+    set -exo pipefail
+    cd "${HOME}"
+    if [[ "${*}" =~ "prep" ]]; then
+        [[ ! -d SwiftVoxel ]] && git clone https://github.com/claygarrett/SwiftVoxel.git
+    fi
+    if [[ "${*}" =~ "build-launch-simulator-and-install" ]]; then
+        cd SwiftVoxel
+        xcrun simctl list --json devices available; sleep 20 # fix a weird bug where xcrun simctl list --json devices available is empty the first run
+        SIM_VER="$(xcrun simctl list --json devices available | grep name | grep Pro | head -1 | cut -d'"' -f4)"
+        xcodebuild -workspace SwiftVoxel.xcworkspace -derivedDataPath /tmp/ -scheme SwiftVoxel -destination "platform=iOS Simulator,name=${SIM_VER}" build
+        SIMID=$(xcrun simctl create test "com.apple.CoreSimulator.SimDeviceType.$(echo ${SIM_VER} | sed 's/ /-/g')")
+        xcrun simctl boot "${SIMID}"
+        sleep 120
+        open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
+        xcrun simctl install test /tmp/Build/Products/Debug-iphonesimulator/SwiftVoxel.app
+    fi
+    if [[ "${*}" =~ "test" ]]; then
+        BUNDLE_ID="$(defaults read /tmp/Build/Products/Debug-iphonesimulator/SwiftVoxel.app/Info.plist CFBundleIdentifier)"
+        xcrun simctl launch test "${BUNDLE_ID}"
+        sleep 300 # Sleep 5 minutes to make sure the VM doesn't crash
+    fi
+    ```
 
-```bash
-# Set up swift voxel repo inside of VM
-❯ anka run 13.0 bash -lc "./swift-voxel.bash prep"
-# Build swift voxel, start simulator, and then install it inside
-❯ anka run 13.0 bash -lc "./swift-voxel.bash build-launch-simulator-and-install"
-# Prepare simulator with discrete GPU
-❯ anka --debug view --click 13.0/simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas 13.0
-# Run test in simulator
-❯ anka run 13.0 bash -lc "./swift-voxel.bash test"
-```
+4. Run the `swift-voxel.bash` prepare, build, install, and open simulator stages. Then, before executing the test, run the `simulator-prefer-discrete-gpu.muas` script.
+
+    ```bash
+    # Set up swift voxel repo inside of VM
+    ❯ anka run 13.0 bash -lc "./swift-voxel.bash prep"
+    # Build swift voxel, start simulator, and then install it inside
+    ❯ anka run 13.0 bash -lc "./swift-voxel.bash build-launch-simulator-and-install"
+    # Prepare simulator with discrete GPU
+    ❯ anka --debug view --click 13.0/simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas 13.0
+    # Run test in simulator
+    ❯ anka run 13.0 bash -lc "./swift-voxel.bash test"
+    ```
 
 ## Script Development
 
 ### Working with images
 
-While working with images, 
+You will eventually have a need to target a specific 
 
 There are several tools you can use to make development of scripts easier:
 
