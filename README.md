@@ -1,6 +1,6 @@
 # Anka Click/MUAS Scripts
 
-This repo is a collection of Behavior-Driven MacOS UI Automation Framework scripts and tools for Anka's "click" feature. Often, macOS and applications do not have a CLI allowing you to perform certain actions such as toggling configuration options. This varies from app to app and can severely impact the maintainabiliy and automatability for your team. With MUAF scripts, you can programmatically target, click, and even send keystrokes to your Anka VM's macOS UI.
+This repo is a collection of Behavior-Driven MacOS UI Automation Framework scripts and tools for Anka's "click" feature. Often, macOS and applications do not have a CLI allowing you to perform certain actions such as toggling configuration options. This varies from app to app and can severely impact the maintainabiliy and automatability for your team. With MUAF scripts, you can programmatically target, click, send keystrokes, and much more to your Anka VM's macOS UI.
 
 Some examples of what you can automate:
 
@@ -217,7 +217,53 @@ Fri Oct 21 15:13:05 click: waiting for 1 sec 0 nsec
 System Integrity Protection status: disabled.
 ```
 
+### Prefer Discrete GPU in Simulator
+
+1. Start a Ventura VM
+2. Ensure Xcode is installed
+3. Copy in the `swift-voxel.bash` script
+
+```bash
+#!/usr/bin/env bash
+set -exo pipefail
+cd "${HOME}"
+if [[ "${*}" =~ "prep" ]]; then
+  [[ ! -d SwiftVoxel ]] && git clone https://github.com/claygarrett/SwiftVoxel.git
+fi
+if [[ "${*}" =~ "build-launch-simulator-and-install" ]]; then
+  cd SwiftVoxel
+  xcrun simctl list --json devices available; sleep 20 # fix a weird bug where xcrun simctl list --json devices available is empty the first run
+  SIM_VER="$(xcrun simctl list --json devices available | grep name | grep Pro | head -1 | cut -d'"' -f4)"
+  xcodebuild -workspace SwiftVoxel.xcworkspace -derivedDataPath /tmp/ -scheme SwiftVoxel -destination "platform=iOS Simulator,name=${SIM_VER}" build
+  SIMID=$(xcrun simctl create test "com.apple.CoreSimulator.SimDeviceType.$(echo ${SIM_VER} | sed 's/ /-/g')")
+  xcrun simctl boot "${SIMID}"
+  sleep 120
+  open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
+  xcrun simctl install test /tmp/Build/Products/Debug-iphonesimulator/SwiftVoxel.app
+fi
+if [[ "${*}" =~ "test" ]]; then
+  BUNDLE_ID="$(defaults read /tmp/Build/Products/Debug-iphonesimulator/SwiftVoxel.app/Info.plist CFBundleIdentifier)"
+  xcrun simctl launch test "${BUNDLE_ID}"
+  sleep 300 # Sleep 5 minutes to make sure the VM doesn't crash
+fi
+```
+
+```bash
+# Set up swift voxel repo inside of VM
+❯ anka run 13.0 bash -lc "./swift-voxel.bash prep"
+# Build swift voxel, start simulator, and then install it inside
+❯ anka run 13.0 bash -lc "./swift-voxel.bash build-launch-simulator-and-install"
+# Prepare simulator with discrete GPU
+❯ anka --debug view --click 13.0/simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas 13.0
+# Run test in simulator
+❯ anka run 13.0 bash -lc "./swift-voxel.bash test"
+```
+
 ## Script Development
+
+### Working with images
+
+While working with images, 
 
 There are several tools you can use to make development of scripts easier:
 
