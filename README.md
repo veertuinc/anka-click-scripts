@@ -388,12 +388,3 @@ There are several tools you can use to make development of scripts easier:
     . . .
     ```
 
-
-
-
-
-
-TODO:
-
-- Support || for separating alternative images in () instead of having them have the same name
-- Guide for icloud login
