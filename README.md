@@ -139,35 +139,71 @@ end
 :cmd q
 ```
 
----
+## Conditionals
 
+### `if <desired_var> [, <undesired_var>]`
 
-This behavioural logic extends also on next wait rule also:
-(img1) (img2)... (imgN)
-+wait_img
-to achieve to the wait_img "state" same retry and skip logic is applied
+If statements are available to use inside of your scripts, but differ drastically from what you're probably used to in other scripting languages.
 
-There are also:
-if (awaiting_image) [, (cansel_image)] {rule}
+It requires at a minimum one variable name. The first variable in the condition is the image to be waited for on screen.
 
-if (awaiting_image) [, (cansel_image)]
-    rule
-    rule
-else
-    rule
-    rule
-    rule
+```
+if desired_image rule
+```
+
+The rules to execute can be split onto separate lines using `end`. The example below will, if `input_image` exists, type the password and hit return.
+
+```
+if input_image
+    "password\n"
 end
+```
 
-Also:
-while (image) {rule}
+A bash-like `else` is also possible. The following example will check if `english_image` exists, click itself, then click `next_image`, or else only click `next_image`.
+
+```
+if english_image
+    (english_image) (next_image)
+else
+    (next_image)
+end
+```
+
+There are also ways of scripting to handle differences between versions. The next example is taken from a script that handles when different macOS versions are used and only some of them show a language selection. If a second variable is present with a comma separating them, you can expect that the first variable will be waited on **as long as** the second is not present.
+
+```
+if english_image, menu_utilities_image
+    (english_image) (next_image)
+end
+```
+
+#### Example
+
+This example will ensure that, even if Prefer Discrete GPU is enabled already, the script will complete. [See the full script here.](./simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas)
+
+```
+(dock_simulator_icon_image)
+if menu_simulator_image
+    (menu_file_image) (menu_gpu_selection_image)
+    if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
+        (menu_prefer_discrete_gpu_image)
+    else
+        (dock_simulator_icon_image)
+        exit
+    end
+end
+```
+
+### `while <var>`
+
+While loops are useful to continually perform an action while something is true. 
+
+```
+while background_image (background_image)
+
+```
 
 
-
-Variable operations:
-if (image) $var = 100
-
-if $var > 99 exit
 
 The "power" is behavioural sequences...
 
