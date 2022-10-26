@@ -199,7 +199,7 @@ if menu_simulator_image
 end
 ```
 
-### `while <var>`
+### `while <variable>`
 
 While loops are useful to continually perform an action while something is true. 
 
@@ -210,7 +210,7 @@ while background_image (background_image)
 
 ## Comments
 
-### `; <message>`
+### `; <string>`
 
 #### Example
 
