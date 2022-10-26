@@ -347,15 +347,29 @@ While most scripts will be for Anka VM Template preparation, you can of course u
 
 ## Script Development
 
-### Working with images
+### Working with Images
 
-You will eventually have a need to target a specific 
+#### Targeting Accuracy
 
-There are several tools you can use to make development of scripts easier:
+The targeting engine does its best to match your screenshot with what it finds on the screen. Here are a few things to keep in mind to ensure that your targeting of images works as expected:
+
+- Differences in scale/resolution can impact this, so ensure that you're not using a different scale/zoom when viewing your VMs desktop. 
+- Transparency behind menu items and other colors can change. It may help for you to drop the saturation in your images to eliminate colors, but also keep in mind that gradients may be present.
+- The less data in the image the better. Size down your images so that only what is necessary is present.
+
+#### Encoding / Unencoding
+
+Images used for targeting are base64 encoded and placed directly into scripts. Because of this, you need an easy way to unencode them from the script into png files and then also encode them once changes are made or new pngs are added. There are two scripts for this:
 
 1. `unencode-images.bash` - Allows you take the base64 png variables in the MUAS and export them to png files.
 
     ```bash
+    ❯ head -3 13.0/enable-vnc/enable-vnc.muas  
+    $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
+    $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
+    $sharing_image iVBORw0KGgoAAAANSUhEUgAAA. . .
+    . . .
+
     ❯ ls 13.0/enable-vnc/                
     enable-vnc.muas
 
@@ -363,20 +377,16 @@ There are several tools you can use to make development of scripts easier:
     . . .
 
     ❯ ls 13.0/enable-vnc/ 
-    background.png      general_title.png   on.png              vnc_alt.png
-    close.png           login_items.png     settings.png
-    enable-vnc.muas     modify_settings.png sharing.png
-    general.png         off.png             vnc.png
+    vnc.png   vnc_alt.png
+    enable-vnc.muas     sharing.png
     ```
 
-2. `encode-images.bash` - Allows you to take all images in the same directory as the MUAS and encode them as variables.
+2. `encode-images.bash` - Allows you to take all images in the same directory as the script and encode them as variables.
 
     ```bash
     ❯ ls 13.0/enable-vnc/ 
-    background.png      general_title.png   on.png              vnc_alt.png
-    close.png           login_items.png     settings.png
-    enable-vnc.muas     modify_settings.png sharing.png
-    general.png         off.png             vnc.png
+    vnc.png   vnc_alt.png
+    enable-vnc.muas     sharing.png
 
     ❯ ls 13.0/enable-vnc/                                        
     enable-vnc.muas
