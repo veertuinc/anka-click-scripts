@@ -148,10 +148,10 @@ If statements are available to use inside of your scripts, but differ drasticall
 It requires at a minimum one variable name. The first variable in the condition is the image to be waited for on screen.
 
 ```
-if desired_image rule
+if desired_image (target_image)
 ```
 
-The rules to execute can be split onto separate lines using `end`. The example below will, if `input_image` exists, type the password and hit return.
+The rules to execute can be split onto separate lines and wrapped using `end`. The example below will, if `input_image` exists, type the password and hit return.
 
 ```
 if input_image
@@ -169,7 +169,7 @@ else
 end
 ```
 
-There are also ways of scripting to handle differences between versions. The next example is taken from a script that handles when different macOS versions are used and only some of them show a language selection. If a second variable is present with a comma separating them, you can expect that the first variable will be waited on **as long as** the second is not present.
+There are also ways of scripting to handle differences between OS versions. The next example is taken from a script that handles when different macOS versions are used and only some of them show a language selection. If a second variable is present with a comma separating them, you can only expect that the first variable will be waited on **as long as** the second is not present.
 
 ```
 if english_image, menu_utilities_image
@@ -183,11 +183,16 @@ This example will ensure that, even if Prefer Discrete GPU is enabled already, t
 
 ```
 (dock_simulator_icon_image)
+; check if the simulator was brought to front
 if menu_simulator_image
+    ; click on File in the menu, then click on GPU Selection.
     (menu_file_image) (menu_gpu_selection_image)
+    ; IF prefer discrete gpu is not enabled
     if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
+        ; enable discrete gpu
         (menu_prefer_discrete_gpu_image)
     else
+        ; otherwise bring simulator to front again and exit script
         (dock_simulator_icon_image)
         exit
     end
@@ -203,15 +208,31 @@ while background_image (background_image)
 
 ```
 
+## Comments
 
+### `; <message>`
 
-The "power" is behavioural sequences...
+#### Example
 
-This line could be read as if wait for off_image till on_image succeeded do something
-succeeded means the off_image appeared, not on_image, on_image is just allow to abort waiting
+```
+(dock_simulator_icon_image)
+; check if the simulator was brought to front
+if menu_simulator_image
+    ; click on File in the menu, then click on GPU Selection.
+    (menu_file_image) (menu_gpu_selection_image)
+    ; IF prefer discrete gpu is not enabled
+    if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
+        ; enable discrete gpu
+        (menu_prefer_discrete_gpu_image)
+    else
+        ; otherwise bring simulator to front again and exit script
+        (dock_simulator_icon_image)
+        exit
+    end
+end
+```
 
-So it is's already on do nothing in this particular case
-
+---
 
 ## Examples
 
