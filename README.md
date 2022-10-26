@@ -201,11 +201,11 @@ end
 
 ### `while <variable>`
 
-While loops are useful to continually perform an action while something is true. 
+While loops are useful to perform an action until it's no longer true.
 
 ```
+; remove the "background items added" popups until they no longer exist as they will cover up other images we're targetting
 while background_image (background_image)
-
 ```
 
 ## Comments
