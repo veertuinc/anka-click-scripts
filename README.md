@@ -91,7 +91,7 @@ In the last example, you'll see the following:
 +bash_image
 ```
 
-Part of the wait logic for `bash_image` is to retry the `terminal_image` should waiting timeout. This is useful should the first click (on `terminal_image`) not send properly for some reason.
+If the wait fails to find what it needs, it will automatically try the `(terminal_image)` step again. This is useful should the first click (on `terminal_image`) not send properly for some sort of lag or UI bug.
 
 ## Keystrokes
 
