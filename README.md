@@ -159,13 +159,13 @@ if input_image
 end
 ```
 
-A bash-like `else` is also possible. The following example will check if `english_image` exists, click itself, then click `next_image`, or else only click `next_image`.
+A bash-like `else` is also possible. The following example will check if `login_items_image` exists, click itself, then click `sharing_image`, or else click on `general_image` before `sharing_image`.
 
 ```
-if english_image
-    (english_image) (next_image)
+if login_items_image
+    (login_items_image) (sharing_image)
 else
-    (next_image)
+    (general_image) (sharing_image)
 end
 ```
 
