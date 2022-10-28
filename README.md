@@ -244,7 +244,7 @@ end
 # Start it in Recovery Mode (2)
 ❯ ANKA_START_MODE=2 anka start 13.0
 # Run disable-sip script against VM booted in Recovery Mode
-❯ anka --debug view --click arm64/12.6/disable-sip/disable-sip.muas test
+❯ anka --debug view --click arm64/12.6/disable-sip/disable-sip.muas 13.0
 Fri Oct 21 15:12:49 main: executing command view
 Fri Oct 21 15:12:49 click: loading resource data 2144 bytes
 Fri Oct 21 15:12:49 click: utilities_image: shelved image 53x22 bytes
