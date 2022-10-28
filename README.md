@@ -8,233 +8,9 @@ Some examples of what you can automate:
 - Enabling VNC/Remote Management under System Preferences.
 - Enabling certain settings only available in the Simulator Menu (Prefer Discrete GPU) to optimize simulator tests.
 
-# Syntax Basics
-
-## Variables
-
-### `$<variable name>`
-
-Assign a `string`, `integer`, or `png image (as base64)` to a variable at the top of your muas script with `$<label>`. These are then made available throught the script logic.
-
-```
-$macos_maj_ver 12
-$prefix "muas-"
-$next_image iVBORw0KGgoAAAANSUhEUgAA. . .
-```
-
-**PRO TIP:** If there are multiple image/png variables with the same name, the framework will try each image until it gets a match.
-
-## Clicking and Targeting
-
-### `(<location/target>)[mouse button]`
-
-There are many times that macOS or your applications will require user confirmation for popup dialogs. Defining where and how to click is fairly simple:
-
-#### Location/Target
-
-- **Center of Image:** `(image_variable_name)` allows you to target the center of an image on screen using the variable name defined in your script.
-- **Coordinate:**`(X,Y)` is the pixels starting from the top left corner of the screen (which is `(0,0)`).
-    - `+` and `-` are available to control the direction from the previous mouse location: `(+350` is right 350 pixels, and `-10)` will be up 10 pixels.
-    - You can also target and click relative to previous mouse location: `(vnc_image)0 (+350,+0)`
-
-#### Mouse Button
-
-- `0`: do nothing, just use the location specified as a starting target for subsequent directives
-- `1`: (default) left click with tiny interval between down and up
-
-#### Example
-
-**PRO TIP:** Clicks currently are the only directives which be placed inline.
-
-This code snippet will target the center of vnc_image, avoid clicking with 0, and then from there move +350,+0 and click.
-
-```
-(vnc_image)0 (+350,+0)
-if modify_settings_image, on_image
-    "admin\n"
-else
-    +500
-end
-```
-
-## Waiting
-
-### `+<duration/image variable>`
-
-It is very common for applications to take time to load. Often you'll want to execute actions and have delays in between them so you can guarantee subsequent actions are not performed prematurely. This can be done with either a duration or image variable:
-
-- **Duration:** The interval as an integer that the script will wait before proceeding: `+2s, +5000n, 300 (msec by default)`
-- **Wait for Image:** The image we want to ensure is visible before proceeding: `+bash_image`
-
-#### Example
-
-This code snippet will, inside of Recovery Mode, click Utilities in the menu bar, then the Terminal button, and once terminal is opened type "csrutil disable" and hit return.
-
-```
-(utilities_image) (terminal_image)
-+bash_image
-"csrutil disable\n"
-+1s
-"y\n"
-+1s
-"admin\n"
-+1s
-"shutdown -h now\n"
-```
-
-#### Last Retry
-
-In the last example, you'll see the following:
-
-```
-(utilities_image) (terminal_image)
-+bash_image
-```
-
-If the wait fails to find what it needs, it will automatically try the `(terminal_image)` step again. This is useful should the first click (on `terminal_image`) not send properly for some sort of lag or UI bug.
-
-## Keystrokes
-
-### `"keystrokes here\n"`
-
-Simulating user input is also possible. This is useful for typing logins or setting configuration values within user prompts. It will not automatically execute return, so be sure to use `\n` on the end for that. You can also tab with `\t`.
-
-#### Example
-
-```
-(utilities_image) (terminal_image)
-+bash_image
-"csrutil disable\n"
-+1s
-"y\n"
-+1s
-"admin\n"
-+1s
-"shutdown -h now\n"
-```
-
-## Keyboard Shortcuts
-
-### `:<key> <key> . . .`
-
-Closing or quitting applications can be done through clicking, however, keyboard shortcuts are often much easier to use. You can define 8 keys to be pressed simultaneously inside of the script. 
-
-Note: Some codes aren't what you expect. The command key is `cmd` and escape `esc`. You can find macOS QUERTY keyboard codes through a simple google search.
-
-#### Examples
-
-The incomplete snippet below will enable VNC inside of System Preferences and then quit with it `:cmd q`
-```
-. . .
-if off_image, on_image
-    (vnc_image)0
-    (+350,+0)
-    if modify_settings_image, on_image
-        "admin\n"
-    else
-        +500
-    end
-end
-
-:cmd q
-```
-
-## Conditionals
-
-### `if <desired_var> [, <undesired_var>]`
-
-If statements are available to use inside of your scripts, but differ drastically from what you're probably used to in other scripting languages.
-
-It requires at a minimum one variable name. The first variable in the condition is the image to be waited for on screen.
-
-```
-if desired_image (target_image)
-```
-
-The rules to execute can be split onto separate lines and wrapped using `end`. The example below will, if `input_image` exists, type the password and hit return.
-
-```
-if input_image
-    "password\n"
-end
-```
-
-A bash-like `else` is also possible. The following example will check if `login_items_image` exists, click itself, then click `sharing_image`, or else click on `general_image` before `sharing_image`.
-
-```
-if login_items_image
-    (login_items_image) (sharing_image)
-else
-    (general_image) (sharing_image)
-end
-```
-
-There are also ways of scripting to handle differences between OS versions. The next example is taken from a script that handles when different macOS versions are used and only some of them show a language selection. If a second variable is present with a comma separating them, you can only expect that the first variable will be waited on **as long as** the second is not present.
-
-```
-if english_image, menu_utilities_image
-    (english_image) (next_image)
-end
-```
-
-#### Example
-
-This example will ensure that, even if Prefer Discrete GPU is enabled already, the script will complete. [See the full script here.](./simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas)
-
-```
-(dock_simulator_icon_image)
-; check if the simulator was brought to front
-if menu_simulator_image
-    ; click on File in the menu, then click on GPU Selection.
-    (menu_file_image) (menu_gpu_selection_image)
-    ; IF prefer discrete gpu is not enabled
-    if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
-        ; enable discrete gpu
-        (menu_prefer_discrete_gpu_image)
-    else
-        ; otherwise bring simulator to front again and exit script
-        (dock_simulator_icon_image)
-        exit
-    end
-end
-```
-
-### `while <variable>`
-
-While loops are useful to perform an action until it's no longer true.
-
-```
-; remove the "background items added" popups until they no longer exist as they will cover up other images we're targetting
-while background_image (background_image)
-```
-
-## Comments
-
-### `; <string>`
-
-#### Example
-
-```
-(dock_simulator_icon_image)
-; check if the simulator was brought to front
-if menu_simulator_image
-    ; click on File in the menu, then click on GPU Selection.
-    (menu_file_image) (menu_gpu_selection_image)
-    ; IF prefer discrete gpu is not enabled
-    if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
-        ; enable discrete gpu
-        (menu_prefer_discrete_gpu_image)
-    else
-        ; otherwise bring simulator to front again and exit script
-        (dock_simulator_icon_image)
-        exit
-    end
-end
-```
-
 ---
 
-## Examples
+## Usage Examples
 
 ### Disable SIP (through Recovery Mode)
 
@@ -345,11 +121,237 @@ While most scripts will be for Anka VM Template preparation, you can of course u
 
 ---
 
-## Script Development
+## Syntax Basics
+
+### Variables
+
+#### `$<variable name>`
+
+Assign a `string`, `integer`, or `png image (as base64)` to a variable at the top of your muas script with `$<label>`. These are then made available throught the script logic.
+
+```
+$macos_maj_ver 12
+$prefix "muas-"
+$next_image iVBORw0KGgoAAAANSUhEUgAA. . .
+```
+
+**PRO TIP:** If there are multiple image/png variables with the same name, the framework will try each image until it gets a match.
+
+### Clicking and Targeting
+
+#### `(<location/target>)[mouse button]`
+
+There are many times that macOS or your applications will require user confirmation for popup dialogs. Defining where and how to click is fairly simple:
+
+##### Location/Target
+
+- **Center of Image:** `(image_variable_name)` allows you to target the center of an image on screen using the variable name defined in your script.
+- **Coordinate:**`(X,Y)` is the pixels starting from the top left corner of the screen (which is `(0,0)`).
+    - `+` and `-` are available to control the direction from the previous mouse location: `(+350` is right 350 pixels, and `-10)` will be up 10 pixels.
+    - You can also target and click relative to previous mouse location: `(vnc_image)0 (+350,+0)`
+
+##### Mouse Button
+
+- `0`: do nothing, just use the location specified as a starting target for subsequent directives
+- `1`: (default) left click with tiny interval between down and up
+
+##### Example
+
+**PRO TIP:** Clicks currently are the only directives which be placed inline.
+
+This code snippet will target the center of vnc_image, avoid clicking with 0, and then from there move +350,+0 and click.
+
+```
+(vnc_image)0 (+350,+0)
+if modify_settings_image, on_image
+    "admin\n"
+else
+    +500
+end
+```
+
+### Waiting
+
+#### `+<duration/image variable>`
+
+It is very common for applications to take time to load. Often you'll want to execute actions and have delays in between them so you can guarantee subsequent actions are not performed prematurely. This can be done with either a duration or image variable:
+
+- **Duration:** The interval as an integer that the script will wait before proceeding: `+2s, +5000n, 300 (msec by default)`
+- **Wait for Image:** The image we want to ensure is visible before proceeding: `+bash_image`
+
+##### Example
+
+This code snippet will, inside of Recovery Mode, click Utilities in the menu bar, then the Terminal button, and once terminal is opened type "csrutil disable" and hit return.
+
+```
+(utilities_image) (terminal_image)
++bash_image
+"csrutil disable\n"
++1s
+"y\n"
++1s
+"admin\n"
++1s
+"shutdown -h now\n"
+```
+
+##### Last Retry
+
+In the last example, you'll see the following:
+
+```
+(utilities_image) (terminal_image)
++bash_image
+```
+
+If the wait fails to find what it needs, it will automatically try the `(terminal_image)` step again. This is useful should the first click (on `terminal_image`) not send properly for some sort of lag or UI bug.
+
+### Keystrokes
+
+#### `"keystrokes here\n"`
+
+Simulating user input is also possible. This is useful for typing logins or setting configuration values within user prompts. It will not automatically execute return, so be sure to use `\n` on the end for that. You can also tab with `\t`.
+
+##### Example
+
+```
+(utilities_image) (terminal_image)
++bash_image
+"csrutil disable\n"
++1s
+"y\n"
++1s
+"admin\n"
++1s
+"shutdown -h now\n"
+```
+
+### Keyboard Shortcuts
+
+#### `:<key> <key> . . .`
+
+Closing or quitting applications can be done through clicking, however, keyboard shortcuts are often much easier to use. You can define 8 keys to be pressed simultaneously inside of the script. 
+
+Note: Some codes aren't what you expect. The command key is `cmd` and escape `esc`. You can find macOS QUERTY keyboard codes through a simple google search.
+
+##### Examples
+
+The incomplete snippet below will enable VNC inside of System Preferences and then quit with it `:cmd q`
+```
+. . .
+if off_image, on_image
+    (vnc_image)0
+    (+350,+0)
+    if modify_settings_image, on_image
+        "admin\n"
+    else
+        +500
+    end
+end
+
+:cmd q
+```
+
+### Conditionals
+
+#### `if <desired_var> [, <undesired_var>]`
+
+If statements are available to use inside of your scripts, but differ drastically from what you're probably used to in other scripting languages.
+
+It requires at a minimum one variable name. The first variable in the condition is the image to be waited for on screen.
+
+```
+if desired_image (target_image)
+```
+
+The rules to execute can be split onto separate lines and wrapped using `end`. The example below will, if `input_image` exists, type the password and hit return.
+
+```
+if input_image
+    "password\n"
+end
+```
+
+A bash-like `else` is also possible. The following example will check if `login_items_image` exists, click itself, then click `sharing_image`, or else click on `general_image` before `sharing_image`.
+
+```
+if login_items_image
+    (login_items_image) (sharing_image)
+else
+    (general_image) (sharing_image)
+end
+```
+
+There are also ways of scripting to handle differences between OS versions. The next example is taken from a script that handles when different macOS versions are used and only some of them show a language selection. If a second variable is present with a comma separating them, you can only expect that the first variable will be waited on **as long as** the second is not present.
+
+```
+if english_image, menu_utilities_image
+    (english_image) (next_image)
+end
+```
+
+##### Example
+
+This example will ensure that, even if Prefer Discrete GPU is enabled already, the script will complete. [See the full script here.](./simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas)
+
+```
+(dock_simulator_icon_image)
+; check if the simulator was brought to front
+if menu_simulator_image
+    ; click on File in the menu, then click on GPU Selection.
+    (menu_file_image) (menu_gpu_selection_image)
+    ; IF prefer discrete gpu is not enabled
+    if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
+        ; enable discrete gpu
+        (menu_prefer_discrete_gpu_image)
+    else
+        ; otherwise bring simulator to front again and exit script
+        (dock_simulator_icon_image)
+        exit
+    end
+end
+```
+
+#### `while <variable>`
+
+While loops are useful to perform an action until it's no longer true.
+
+```
+; remove the "background items added" popups until they no longer exist as they will cover up other images we're targetting
+while background_image (background_image)
+```
+
+### Comments
+
+#### `; <string>`
+
+##### Example
+
+```
+(dock_simulator_icon_image)
+; check if the simulator was brought to front
+if menu_simulator_image
+    ; click on File in the menu, then click on GPU Selection.
+    (menu_file_image) (menu_gpu_selection_image)
+    ; IF prefer discrete gpu is not enabled
+    if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
+        ; enable discrete gpu
+        (menu_prefer_discrete_gpu_image)
+    else
+        ; otherwise bring simulator to front again and exit script
+        (dock_simulator_icon_image)
+        exit
+    end
+end
+```
+
+---
+
+### Script Development
 
 ### Working with Images
 
-#### Targeting Accuracy
+##### Targeting Accuracy
 
 The targeting engine does its best to match your screenshot with what it finds on the screen. Here are a few things to keep in mind to ensure that your targeting of images works as expected:
 
@@ -357,7 +359,7 @@ The targeting engine does its best to match your screenshot with what it finds o
 - Transparency behind menu items and other colors can change. It may help for you to drop the saturation in your images to eliminate colors, but also keep in mind that gradients may be present.
 - The less data in the image the better. Size down your images so that only what is necessary is present.
 
-#### Encoding / Unencoding
+##### Encoding / Unencoding
 
 Images used for targeting are base64 encoded and placed directly into scripts. Because of this, you need an easy way to unencode them from the script into png files and then also encode them once changes are made or new pngs are added. There are two scripts for this:
 
@@ -397,4 +399,3 @@ Images used for targeting are base64 encoded and placed directly into scripts. B
     $sharing_image iVBORw0KGgoAAAANSUhEUgAAA. . .
     . . .
     ```
-
