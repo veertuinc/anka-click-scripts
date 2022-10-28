@@ -10,6 +10,7 @@ $creen_sharing_on_image iVBORw0KGgoAAAANSUhEUgAAAGgAAAAoCAYAAAASRL/NAAAAAXNSR0IA
 
 (menu_apple_image) (menu_system_settings_image)
 ; remove the "background items added" popups until they no longer exist
+if !settings (background_image)
 while background_image (background_image)
 
 (search_image)
