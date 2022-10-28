@@ -347,11 +347,11 @@ end
 
 ---
 
-### Script Development
+## Script Development
 
 ### Working with Images
 
-##### Targeting Accuracy
+#### Targeting Accuracy
 
 The targeting engine does its best to match your screenshot with what it finds on the screen. Here are a few things to keep in mind to ensure that your targeting of images works as expected:
 
@@ -359,7 +359,7 @@ The targeting engine does its best to match your screenshot with what it finds o
 - Transparency behind menu items and other colors can change. It may help for you to drop the saturation in your images to eliminate colors, but also keep in mind that gradients may be present.
 - The less data in the image the better. Size down your images so that only what is necessary is present.
 
-##### Encoding / Unencoding
+#### Encoding / Unencoding
 
 Images used for targeting are base64 encoded and placed directly into scripts. Because of this, you need an easy way to unencode them from the script into png files and then also encode them once changes are made or new pngs are added. There are two scripts for this:
 
