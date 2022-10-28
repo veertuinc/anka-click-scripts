@@ -279,7 +279,7 @@ Fri Oct 21 15:13:02 click: waiting for 1 sec 0 nsec
 Fri Oct 21 15:13:03 click: waiting for 1 sec 0 nsec
 Fri Oct 21 15:13:05 click: waiting for 1 sec 0 nsec
 # Check if SIP is disabled
-❯ anka run test csrutil status
+❯ anka run 13.0 csrutil status
 System Integrity Protection status: disabled.
 ```
 
