@@ -157,8 +157,6 @@ There are many times that macOS or your applications will require user confirmat
 
 ##### Example
 
-**PRO TIP:** Clicks currently are the only directives which be placed inline.
-
 This code snippet will target the center of vnc_image, avoid clicking with 0, and then from there move +350,+0 and click.
 
 ```
