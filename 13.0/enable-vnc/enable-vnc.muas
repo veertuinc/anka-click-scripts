@@ -18,7 +18,7 @@ while background_image (background_image)
 ; wait a second or else login shows in the search results
 +1s
 "\n"
-
++3s
 +screen_sharing_off_image
 
 if screen_sharing_off_image, screen_sharing_on_image
