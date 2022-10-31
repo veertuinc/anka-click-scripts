@@ -1,6 +1,6 @@
-# Anka Behavior-Driven MacOS UI Automation Framework scripts
+# Anka Click Scripts
 
-This repo is a collection of Behavior-Driven MacOS UI Automation Framework scripts and tools for Anka's "click" feature. Often, macOS and applications do not have a CLI allowing you to perform certain actions such as toggling configuration options. This varies from app to app and can severely impact the maintainabiliy and automatability for your team. With MUAF scripts, you can programmatically target, click, send keystrokes, and much more to your Anka VM's macOS UI.
+This repo is a collection of scripts and tools for Anka's "click" feature. Often, macOS and applications do not have a CLI allowing you to perform certain actions such as toggling configuration options. This varies from app to app and can severely impact the maintainability and automatability for your team. With Anka Click scripts, you can programmatically target, click, send keystrokes, and much more to your Anka VM's UI.
 
 Some examples of what you can automate:
 
@@ -20,7 +20,7 @@ Some examples of what you can automate:
 # Start it in Recovery Mode (2)
 ❯ ANKA_START_MODE=2 anka start 13.0
 # Run disable-sip script against VM booted in Recovery Mode
-❯ anka --debug view --click arm64/12.6/disable-sip/disable-sip.muas 13.0
+❯ anka --debug view --click arm64/12.6/disable-sip/disable-sip.click 13.0
 Fri Oct 21 15:12:49 main: executing command view
 Fri Oct 21 15:12:49 click: loading resource data 2144 bytes
 Fri Oct 21 15:12:49 click: utilities_image: shelved image 53x22 bytes
@@ -92,7 +92,7 @@ While most scripts will be for Anka VM Template preparation, you can of course u
     fi
     ```
 
-4. Run the `swift-voxel.bash` prepare, build, install, and open simulator stages. Then, before executing the test, run the `simulator-prefer-discrete-gpu.muas` script.
+4. Run the `swift-voxel.bash` prepare, build, install, and open simulator stages. Then, before executing the test, run the `simulator-prefer-discrete-gpu.click` script.
 
     ```bash
     # Set up swift voxel repo inside of VM
@@ -100,7 +100,7 @@ While most scripts will be for Anka VM Template preparation, you can of course u
     # Build swift voxel, start simulator, and then install it inside
     ❯ anka run 13.0 bash -lc "./swift-voxel.bash build-launch-simulator-and-install"
     # Prepare simulator with discrete GPU
-    ❯ anka --debug view --click 13.0/simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas 13.0
+    ❯ anka --debug view --click 13.0/simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.click 13.0
     # Run test in simulator
     ❯ anka run 13.0 bash -lc "./swift-voxel.bash test"
     ``` -->
@@ -113,10 +113,10 @@ While most scripts will be for Anka VM Template preparation, you can of course u
     ❯ ANKA_START_MODE=2 anka start -v 13.0
     ```
 
-2. Execute `enable-kernel-extensins.muas`
+2. Execute `enable-kernel-extensions.click`
 
     ```bash
-    ❯ anka --debug view --click 13.0/enable-kernel-extensions/enable-kernel-extensions.muas 13.0
+    ❯ anka --debug view --click 13.0/enable-kernel-extensions/enable-kernel-extensions.click 13.0
     ```
 
 ---
@@ -127,11 +127,11 @@ While most scripts will be for Anka VM Template preparation, you can of course u
 
 #### `$<variable name>`
 
-Assign a `string`, `integer`, or `png image (as base64)` to a variable at the top of your muas script with `$<label>`. These are then made available throught the script logic.
+Assign a `string`, `integer`, or `png image (as base64)` to a variable at the top of your anka click script with `$<label>`. These are then made available throughout the script logic.
 
 ```
 $macos_maj_ver 12
-$prefix "muas-"
+$prefix "vmName-"
 $next_image iVBORw0KGgoAAAANSUhEUgAA. . .
 ```
 
@@ -178,6 +178,8 @@ It is very common for applications to take time to load. Often you'll want to ex
 
 - **Duration:** The interval as an integer that the script will wait before proceeding: `+2s, +5000n, 300 (msec by default)`
 - **Wait for Image:** The image we want to ensure is visible before proceeding: `+bash_image`
+
+**PRO TIP:** You can have multiple wait directives on the same line. Example: `+finder,5s`
 
 ##### Example
 
@@ -292,7 +294,7 @@ end
 
 ##### Example
 
-This example will ensure that, even if Prefer Discrete GPU is enabled already, the script will complete. [See the full script here.](./simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.muas)
+This example will ensure that, even if Prefer Discrete GPU is enabled already, the script will complete. [See the full script here.](./simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.click)
 
 ```
 (dock_simulator_icon_image)
@@ -363,24 +365,24 @@ The targeting engine does its best to match your screenshot with what it finds o
 
 Images used for targeting are base64 encoded and placed directly into scripts. Because of this, you need an easy way to unencode them from the script into png files and then also encode them once changes are made or new pngs are added. There are two scripts for this:
 
-1. `unencode-images.bash` - Allows you take the base64 png variables in the MUAS and export them to png files.
+1. `unencode-images.bash` - Allows you take the base64 png variables in the anka click script and export them to png files.
 
     ```bash
-    ❯ head -3 13.0/enable-vnc/enable-vnc.muas  
+    ❯ head -3 13.0/enable-vnc/enable-vnc.click  
     $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
     $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
     $sharing_image iVBORw0KGgoAAAANSUhEUgAAA. . .
     . . .
 
     ❯ ls 13.0/enable-vnc/                
-    enable-vnc.muas
+    enable-vnc.click
 
-    ❯ .tools/unencode-images.bash 13.0/enable-vnc/enable-vnc.muas
+    ❯ .tools/unencode-images.bash 13.0/enable-vnc/enable-vnc.click
     . . .
 
     ❯ ls 13.0/enable-vnc/ 
     vnc.png   vnc_alt.png
-    enable-vnc.muas     sharing.png
+    enable-vnc.click     sharing.png
     ```
 
 2. `encode-images.bash` - Allows you to take all images in the same directory as the script and encode them as variables.
@@ -388,12 +390,12 @@ Images used for targeting are base64 encoded and placed directly into scripts. B
     ```bash
     ❯ ls 13.0/enable-vnc/ 
     vnc.png   vnc_alt.png
-    enable-vnc.muas     sharing.png
+    enable-vnc.click     sharing.png
 
     ❯ ls 13.0/enable-vnc/                                        
-    enable-vnc.muas
+    enable-vnc.click
 
-    ❯ head -3 13.0/enable-vnc/enable-vnc.muas  
+    ❯ head -3 13.0/enable-vnc/enable-vnc.click  
     $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
     $vnc_image iVBORw0KGgoAAAANSUhEUgAAA. . .
     $sharing_image iVBORw0KGgoAAAANSUhEUgAAA. . .
