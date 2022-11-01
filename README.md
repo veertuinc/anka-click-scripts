@@ -125,9 +125,9 @@ While most scripts will be for Anka VM Template preparation, you can of course u
 
 ### Variables
 
-#### `$<variable name>`
+#### `$<variable_name>`
 
-Assign a `string`, `integer`, or `png image (as base64)` to a variable at the top of your anka click script with `$<label>`. These are then made available throughout the script logic.
+Assign a `string`, `integer`, or `png image (as base64)` to a variable with `$<variable_name>`. The variabme_name should not start with digit, contain whitespaces, punctuation or control characters, be one of keywords (like 'if').
 
 ```
 $macos_maj_ver 12
@@ -139,7 +139,7 @@ $next_image iVBORw0KGgoAAAANSUhEUgAA. . .
 
 ### Clicking and Targeting
 
-#### `(<location/target>)[mouse button]`
+#### `(<location/target>)[mouse buttons]`
 
 There are many times that macOS or your applications will require user confirmation for popup dialogs. Defining where and how to click is fairly simple:
 
@@ -150,10 +150,13 @@ There are many times that macOS or your applications will require user confirmat
     - `+` and `-` are available to control the direction from the previous mouse location: `(+350` is right 350 pixels, and `-10)` will be up 10 pixels.
     - You can also target and click relative to previous mouse location: `(vnc_image)0 (+350,+0)`
 
-##### Mouse Button
+##### Mouse Buttons
 
-- `0`: do nothing, just use the location specified as a starting target for subsequent directives
-- `1`: (default) left click with tiny interval between down and up
+- `0`: all buttons up do nothing, could be used as reference location for subsequent relative directives
+- `1`: left button down
+- `2`: right button down
+
+If no buttons were specified in directive left button click (down-up) event is being generated.
 
 ##### Example
 
@@ -195,7 +198,7 @@ This code snippet will, inside of Recovery Mode, click Utilities in the menu bar
 "shutdown -h now\n"
 ```
 
-##### Last Retry
+##### Behavioural sequences
 
 In the last example, you'll see the following:
 
@@ -204,7 +207,7 @@ In the last example, you'll see the following:
 +bash_image
 ```
 
-If the wait fails to find what it needs, it will automatically try the `(terminal_image)` step again. This is useful should the first click (on `terminal_image`) not send properly for some sort of lag or UI bug.
+The click directives could be organaized in sequences - several directies in a line. In this case additional control logic is applied and the sequecce could be treated as `(action) (target)` flow. Next wait directive is also being added to behavioural sequence if any. This is most robust way to control GUI interfaces with the click scripts.
 
 ### Keystrokes
 
@@ -230,9 +233,9 @@ Simulating user input is also possible. This is useful for typing logins or sett
 
 #### `:<key> <key> . . .`
 
-Closing or quitting applications can be done through clicking, however, keyboard shortcuts are often much easier to use. You can define 8 keys to be pressed simultaneously inside of the script. 
+Closing or quitting applications can be done through clicking, however, keyboard shortcuts are often much easier to use. You can define up to 8 keys to be pressed simultaneously inside of a single shortcut directive. 
 
-Note: Some codes aren't what you expect. The command key is `cmd` and escape `esc`. You can find macOS QUERTY keyboard codes through a simple google search.
+Note: You can find macOS QUERTY keyboard codes through a simple google search.
 
 ##### Examples
 
@@ -256,9 +259,7 @@ end
 
 #### `if <desired_var> [, <undesired_var>]`
 
-If statements are available to use inside of your scripts, but differ drastically from what you're probably used to in other scripting languages.
-
-It requires at a minimum one variable name. The first variable in the condition is the image to be waited for on screen.
+If statements are available to use inside of your scripts. It requires at a minimum one variable name. The first variable in the condition - the image to be waited for on screen.
 
 ```
 if desired_image (target_image)
@@ -272,7 +273,7 @@ if input_image
 end
 ```
 
-A bash-like `else` is also possible. The following example will check if `login_items_image` exists, click itself, then click `sharing_image`, or else click on `general_image` before `sharing_image`.
+`else` is also possible. The following example will check if `login_items_image` exists, click itself, then click `sharing_image`, or else click on `general_image` before `sharing_image`.
 
 ```
 if login_items_image
@@ -281,6 +282,8 @@ else
     (general_image) (sharing_image)
 end
 ```
+
+undesired_var allows to optimize directive execution time, the directive ends immediately (with `false`) once the undesired_var image detected.
 
 There are also ways of scripting to handle differences between OS versions. The next example is taken from a script that handles when different macOS versions are used and only some of them show a language selection. If a second variable is present with a comma separating them, you can only expect that the first variable will be waited on **as long as** the second is not present.
 
@@ -312,14 +315,23 @@ if menu_simulator_image
 end
 ```
 
-#### `while <variable>`
+#### `while [ ! ] <variable>`
 
-While loops are useful to perform an action until it's no longer true.
+While loops are useful to perform an action until it's no longer true. Long lists, repetitive items and so could be handled with the while directive.
 
 ```
 ; remove the "background items added" popups until they no longer exist as they will cover up other images we're targetting
 while background_image (background_image)
 ```
+
+#### `exit`
+
+Stops all the further script processing with `success` status.
+
+#### `abort`
+
+Stops all the further script processing with `failure` status.
+
 
 ### Comments
 
@@ -355,9 +367,9 @@ end
 
 The targeting engine does its best to match your screenshot with what it finds on the screen. Here are a few things to keep in mind to ensure that your targeting of images works as expected:
 
-- Differences in scale/resolution can impact this, so ensure that you're not using a different scale/zoom when viewing your VMs desktop. 
+- Differences in scale/resolution can impact this, so ensure that you're not using a different scale/zoom when viewing your VMs desktop. `anka view -s` is recommended.
 - Transparency behind menu items and other colors can change. It may help for you to drop the saturation in your images to eliminate colors, but also keep in mind that gradients may be present.
-- The less data in the image the better. Size down your images so that only what is necessary is present.
+- The less data in the image the better. Crop your images so that only what is necessary is present.
 
 #### Encoding / Unencoding
 
