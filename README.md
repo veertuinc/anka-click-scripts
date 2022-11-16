@@ -309,20 +309,19 @@ This example will ensure that, even if Prefer Discrete GPU is enabled already, t
 
 ```
 (dock_simulator_icon_image)
-; check if the simulator was brought to front
-if menu_simulator_image
-    ; click on File in the menu, then click on GPU Selection.
-    (menu_file_image) (menu_gpu_selection_image)
-    ; IF prefer discrete gpu is not enabled
-    if menu_gpu_selection_image, menu_prefer_discrete_gpu_enabled_image
-        ; enable discrete gpu
-        (menu_prefer_discrete_gpu_image)
-    else
-        ; otherwise bring simulator to front again and exit script
-        (dock_simulator_icon_image)
-        exit
-    end
+; click on File in the menu, then click on GPU Selection.
+(menu_file_image)
+(menu_gpu_selection_image)
+; IF prefer discrete gpu is not enabled
+if menu_prefer_discrete_gpu_image, menu_prefer_discrete_gpu_enabled_image
+    ; enable discrete gpu
+    (menu_prefer_discrete_gpu_image)
+else
+    ; otherwise bring simulator to front again and exit script
+    (dock_simulator_icon_image)
+    exit
 end
+
 ```
 
 #### `while [ ! ] <variable>`
