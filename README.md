@@ -337,6 +337,18 @@ While loops are useful to perform an action until it's no longer true. Long list
 while background_image (background_image)
 ```
 
+##### Example
+
+```
+while !img
+:down
+:down
+:down
+:down
+:down
+end
+```
+
 #### `exit`
 
 Stops all the further script processing with `success` status.
