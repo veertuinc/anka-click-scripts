@@ -10,6 +10,8 @@ Some examples of what you can automate:
 
 ---
 
+**Starting in Anka 3.3.0, `/Library/Application\ Support/Veertu/Anka/bin/click` is available inside of your VMs, allowing you to run click scripts without needing access to the host!**
+
 ## Usage Examples
 
 ### Disable SIP (through Recovery Mode)
