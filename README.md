@@ -159,7 +159,9 @@ There are many times that macOS or your applications will require user confirmat
 - `1`: left button down
 - `2`: right button down
 
-If no buttons were specified in directive, left button click is used.
+If no buttons were specified in directive, left button (`1`) click is used.
+
+**PRO TIP:** You can click multiple times with something like `(image) (+0,+0) (+0,+0) (+0,+0) (+0,+0) (+0,+0)`.
 
 ##### Example
 
