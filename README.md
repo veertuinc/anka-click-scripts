@@ -165,7 +165,7 @@ If no buttons were specified in directive, left button (`1`) click is used.
 
 **PRO TIP:** You can click multiple times with something like `(image) (+0,+0) (+0,+0) (+0,+0) (+0,+0) (+0,+0)`.
 
-##### Example
+##### Examples
 
 This code snippet will target the center of vnc_image, avoid clicking with 0, and then from there move +350,+0 and click.
 
@@ -177,6 +177,9 @@ else
     +500
 end
 ```
+
+If you want to move the mouse to the top left corner of the screen, but not click, use `(0,0)0`
+
 
 ### Waiting
 
