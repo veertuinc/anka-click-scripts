@@ -178,7 +178,7 @@ else
 end
 ```
 
-If you want to move the mouse to the top left corner of the screen, but not click, use `(0,0)0`
+If you want to move the mouse to the top left corner of the screen, but not click, use `(0,0)0`.
 
 
 ### Waiting
