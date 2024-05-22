@@ -57,7 +57,7 @@ while !us :down
 +language
 (continue) (notnow_btn) (continue) (notnow_lbl) (setup_later) (skip) (agree) (agree_dlg)
 +reg
-"Anka\t"
+"${user_name}\t"
 "${user}\t"
 "${passwd}\t"
 "${passwd}\t"

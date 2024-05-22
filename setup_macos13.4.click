@@ -79,7 +79,7 @@ end
 if setup_later (setup_later) (skip)
 (agree) (agree_dlg)
 +reg
-"Anka\t"
+"${user_name}\t"
 "${user}\t"
 "${passwd}\t"
 "${passwd}\t"
