@@ -151,6 +151,7 @@ There are many times that macOS or your applications will require user confirmat
 - **Coordinate:**`(X,Y)` is the pixels starting from the top left corner of the screen (which is `(0,0)`).
     - `+` and `-` are available to control the direction from the previous mouse location: `(+350` is right 350 pixels, and `-10)` will be up 10 pixels.
     - You can also target and click relative to previous mouse location: `(vnc_image)0 (+350,+0)`
+    - Dragging is possible with `(icon)1 (+200,+0)0`
 **PRO TIP:** Mouse movement is performed from the last targeted location. This can cause menus to close if the mouse is somehow moving outside of the menu's borders. Make sure to chain your mouse movements to prevent this.
 
 **Note:** By default in Anka 3.1.2, we disable `Dynamic Wallpapers` and enable `Reduce transparency`. Without these, your targeting may not work should the VM's desktop change colors or menus have different things open under them when transparency is enabled. If manually creating VMs, please set these in the VM you're running Anka Click scripts on.
