@@ -325,6 +325,12 @@ if english_image, menu_utilities_image
 end
 ```
 
+Finally, you can conditionally execute text targeting. Here is an example:
+
+```
+if "Are you sure to delete file?" ("Delete")
+```
+
 ##### Example
 
 This example will ensure that, even if Prefer Discrete GPU is enabled already, the script will complete. [See the full script here.](./simulator-prefer-discrete-gpu/simulator-prefer-discrete-gpu.click)
