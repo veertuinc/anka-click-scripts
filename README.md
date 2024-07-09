@@ -184,14 +184,17 @@ This example shows a simple Text targeting and clicking script.
 
 ```
 ❯ cat test.click
-("Details")
+if "Allow" ("Allow")
 ❯ anka --debug view --click test.click test
-Tue Jul  9 14:50:31 main: executing command view
-Tue Jul  9 14:50:31 view: starting execution of test.click
-click: waiting for "Details" and 0 other templates for match...
-click: Details - (836, 109) in Details (815, 104; 41, 9)
-click: got "Details"'s location (836, 109)
-click: generating (836, 109) 1
+Tue Jul  9 15:06:20 main: executing command view
+Tue Jul  9 15:06:20 view: starting execution of test.click
+click: checking for "Allow" till <timeout>...
+click: waiting for "Allow" and 0 other templates for match...
+click: Allow - (473, 334) in Don't Allow (418, 327; 72, 14)
+click: waiting for "Allow" and 0 other templates for match...
+click: Allow - (473, 334) in Don't Allow (418, 327; 72, 14)
+click: got "Allow"'s location (473, 334)
+click: generating (473, 334) 1
 ```
 
 If you want to move the mouse to the top left corner of the screen, but not click, use `(0,0)0`.
