@@ -147,6 +147,7 @@ There are many times that macOS or your applications will require user confirmat
 
 ##### Location/Target
 
+- **Text:** `("Describe")` will click on the center of the text on screen. Only available in Anka 3.4 and above.
 - **Center of Image:** `(image_variable_name)` allows you to target the center of an image on screen using the variable name defined in your script.
 - **Coordinate:**`(X,Y)` is the pixels starting from the top left corner of the screen (which is `(0,0)`).
     - `+` and `-` are available to control the direction from the previous mouse location: `(+350` is right 350 pixels, and `-10)` will be up 10 pixels.
@@ -179,8 +180,21 @@ else
 end
 ```
 
-If you want to move the mouse to the top left corner of the screen, but not click, use `(0,0)0`.
+This example shows a simple Text targeting and clicking script.
 
+```
+❯ cat test.click
+("Details")
+❯ anka --debug view --click test.click test
+Tue Jul  9 14:50:31 main: executing command view
+Tue Jul  9 14:50:31 view: starting execution of test.click
+click: waiting for "Details" and 0 other templates for match...
+click: Details - (836, 109) in Details (815, 104; 41, 9)
+click: got "Details"'s location (836, 109)
+click: generating (836, 109) 1
+```
+
+If you want to move the mouse to the top left corner of the screen, but not click, use `(0,0)0`.
 
 ### Waiting
 
