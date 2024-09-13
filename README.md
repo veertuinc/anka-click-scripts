@@ -210,6 +210,8 @@ It is very common for applications to take time to load. Often you'll want to ex
 
 **PRO TIP:** You can have multiple wait directives on the same line. Example: `+finder,5s`
 
+The default timeout is 5 minutes.
+
 ##### Example
 
 This code snippet will, inside of Recovery Mode, click Utilities in the menu bar, then the Terminal button, and once terminal is opened type "csrutil disable" and hit return.
