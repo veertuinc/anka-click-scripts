@@ -403,6 +403,12 @@ if menu_simulator_image
 
 ---
 
+## Tips
+
+- There are scrolling limitations, especially for System Preferences. To get around these, use something like `open 'x-apple.systempreferences:com.apple.preference.security?Security'` in the Terminal to go to a specific section of the System Preferences.
+
+---
+
 ## Script Development
 
 ### Working with Images
